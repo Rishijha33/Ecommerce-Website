@@ -19,11 +19,11 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
-    public OrderService(OrderRepository orderRepository, WebClient webClient) {
+    public OrderService(OrderRepository orderRepository, WebClient.Builder webClientBuilder) {
         this.orderRepository = orderRepository;
-        this.webClient = webClient;
+        this.webClientBuilder = webClientBuilder;
     }
 
     public void placeOrder(OrderRequest orderRequest){
@@ -39,8 +39,8 @@ public class OrderService {
         //Getting the skuCodes of all the orders into a list to pass it to the inventory service
 
         // Call Inventory service and place order if product is in stock
-        InventoryResponse[] inventoryResponseArray = webClient.get()
-                                    .uri("http://localhost:8082/api/inventory",
+        InventoryResponse[] inventoryResponseArray = webClientBuilder.build().get()
+                                    .uri("http://inventory-service/api/inventory",
                                             uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())//passing the skucodes to inventory service using the webclient
                                     .retrieve()
                                     .bodyToMono(InventoryResponse[].class)
