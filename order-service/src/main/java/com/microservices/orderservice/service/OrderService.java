@@ -1,10 +1,14 @@
 package com.microservices.orderservice.service;
 
+import com.microservices.orderservice.Mapper.OrderLineItemMapper;
 import com.microservices.orderservice.dto.InventoryResponse;
 import com.microservices.orderservice.dto.OrderLineItemDto;
 import com.microservices.orderservice.dto.OrderRequest;
+import com.microservices.orderservice.exception.InvalidIdException;
+import com.microservices.orderservice.exception.OrderNotFoundException;
 import com.microservices.orderservice.model.OrderLineItem;
 import com.microservices.orderservice.model.Order;
+import com.microservices.orderservice.repository.OrderLineRepository;
 import com.microservices.orderservice.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +24,12 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final WebClient.Builder webClientBuilder;
+    private final OrderLineRepository orderLineRepository;
 
-    public OrderService(OrderRepository orderRepository, WebClient.Builder webClientBuilder) {
+    public OrderService(OrderRepository orderRepository, WebClient.Builder webClientBuilder, OrderLineRepository orderLineRepository) {
         this.orderRepository = orderRepository;
         this.webClientBuilder = webClientBuilder;
+        this.orderLineRepository = orderLineRepository;
     }
 
     public void placeOrder(OrderRequest orderRequest){
@@ -59,4 +65,19 @@ public class OrderService {
         orderLineItem.setSkuCode(orderLineItemDto.getSkuCode());
         return orderLineItem;
     }
+
+    public OrderLineItemDto findOrderLineItem(Long id) throws OrderNotFoundException {
+        if(id == null)
+        {
+            throw new InvalidIdException("The Id provided is not valid");
+        }
+        OrderLineItem orderLineItem = orderLineRepository.getOrderLineItemById(id);
+
+        if(orderLineItem == null)
+        {
+            throw new OrderNotFoundException("Order with given Id is not present");
+        }
+        return OrderLineItemMapper.orderLineItemToDto(orderLineItem);
+    }
+
 }
