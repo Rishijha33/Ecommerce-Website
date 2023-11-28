@@ -1,9 +1,11 @@
 package com.microservices.orderservice.service;
 
 import com.microservices.orderservice.Mapper.OrderLineItemMapper;
+import com.microservices.orderservice.Mapper.OrderMapper;
 import com.microservices.orderservice.dto.InventoryResponse;
 import com.microservices.orderservice.dto.OrderLineItemDto;
 import com.microservices.orderservice.dto.OrderRequest;
+import com.microservices.orderservice.dto.OrderResponse;
 import com.microservices.orderservice.exception.InvalidIdException;
 import com.microservices.orderservice.exception.OrderNotFoundException;
 import com.microservices.orderservice.model.OrderLineItem;
@@ -14,9 +16,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+
+import static com.microservices.orderservice.Mapper.OrderMapper.*;
 
 @Service
 @Transactional
@@ -80,4 +85,17 @@ public class OrderService {
         return OrderLineItemMapper.orderLineItemToDto(orderLineItem);
     }
 
+
+    public List<OrderResponse> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+        List<OrderResponse> orderResponses = new ArrayList<>();
+        if(orders.isEmpty()){return orderResponses;}
+        for(Order order:orders)
+        {
+            OrderResponse orderResponse = orderToOrderResponse(order);
+            orderResponses.add(orderResponse);
+        }
+
+        return orderResponses;
+    }
 }

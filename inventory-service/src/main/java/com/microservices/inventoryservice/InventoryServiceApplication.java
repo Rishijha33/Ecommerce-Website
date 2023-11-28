@@ -25,7 +25,7 @@ public class InventoryServiceApplication {
 
 			Inventory inventory1 = new Inventory();
 			inventory1.setSkuCode("sukuna_poster");
-			inventory1.setQuantity(0);
+			inventory1.setQuantity(20);
 
 			inventoryRepository.save(inventory1);
 			inventoryRepository.save(inventory);
