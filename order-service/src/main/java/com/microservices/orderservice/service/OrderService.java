@@ -37,7 +37,7 @@ public class OrderService {
         this.orderLineRepository = orderLineRepository;
     }
 
-    public void placeOrder(OrderRequest orderRequest){
+    public String placeOrder(OrderRequest orderRequest){
         Order order = new Order();
         order.setOrderNumber(UUID.randomUUID().toString());           // generating the order number
 
@@ -58,9 +58,11 @@ public class OrderService {
                                     .block();
         assert inventoryResponseArray != null;
         boolean allProductInStock = Arrays.stream(inventoryResponseArray).allMatch(InventoryResponse::isInStock);
-        if (allProductInStock){orderRepository.save(order);}
+        if (allProductInStock){
+            orderRepository.save(order);
+            return "Order placed successfully";
+        }
         else {throw  new IllegalArgumentException("Product is not in stock please try again later");}
-
     }
 
     private OrderLineItem mapToDto(OrderLineItemDto orderLineItemDto) {
