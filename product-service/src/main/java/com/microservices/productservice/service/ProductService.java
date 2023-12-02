@@ -2,9 +2,9 @@ package com.microservices.productservice.service;
 
 import com.microservices.productservice.dto.ProductRequest;
 import com.microservices.productservice.dto.ProductResponse;
+import com.microservices.productservice.exception.ProductNotFoundException;
 import com.microservices.productservice.model.Product;
 import com.microservices.productservice.repository.ProductRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public void createProduct(ProductRequest productRequest)
+    public String createProduct(ProductRequest productRequest)
     {
         Product product = Product.builder()
                 .name(productRequest.getName())
@@ -29,6 +29,7 @@ public class ProductService {
                 .price(productRequest.getPrice()).build();
         productRepository.save(product);
         log.info("Product {} is saved", product.getId());  // this is equivalent to "Product" + product.getId + " is saved"
+        return "Product saved successfully name: "+productRequest.getName();
     }
 
     public List<ProductResponse> getAllProducts()
@@ -39,6 +40,23 @@ public class ProductService {
         return productResponses;
     }
 
+
+    public ProductResponse getProductById(String id) {
+        Product repoResponse = productRepository.findProductById(id);
+        ProductResponse response = mapToProductResponse(repoResponse);
+        return response;
+    }
+
+    public ProductResponse getProductByName(String name) throws ProductNotFoundException {
+        Product repoResponse = productRepository.findDistinctByNameLike(name);
+        if (repoResponse == null){
+            throw new ProductNotFoundException("No Product with such name found");
+        }
+        ProductResponse response = mapToProductResponse(repoResponse);
+        log.info(response.toString());
+        return response;
+    }
+
     private ProductResponse mapToProductResponse(Product product) {
         return ProductResponse.builder()
                 .id(product.getId())
@@ -47,4 +65,6 @@ public class ProductService {
                 .price(product.getPrice())
                 .build();
     }
+
+
 }
