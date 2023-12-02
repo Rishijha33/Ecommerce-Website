@@ -8,6 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.web.servlet.MockMvc;
+
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
 
@@ -43,4 +46,8 @@ public class ProductServiceTest {
         //Assert
         Assertions.assertIterableEquals(actualResponses, mockProducts);
     }
+
+
+
+
 }
