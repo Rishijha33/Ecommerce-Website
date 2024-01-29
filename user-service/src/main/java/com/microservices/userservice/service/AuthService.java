@@ -157,6 +157,17 @@ public class AuthService {
          return new ResponseEntity<>(sessionRepository.findAll(), HttpStatus.OK);
     }
 
+    public ResponseEntity<User> getUser(String token){
+        Optional<Session> sessionOptional = sessionRepository.findByTokenAndSessionStatus(token, SessionStatus.ACTIVE);
+        if(sessionOptional.isEmpty()){
+            throw new RuntimeException("Session not present");
+        }
+
+        User user = sessionOptional.get().getUser();
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+
 
 
 }
