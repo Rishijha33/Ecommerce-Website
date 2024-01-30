@@ -14,20 +14,19 @@ public class UserServiceClient {
     private RestTemplateBuilder restTemplateBuilder;
 
 
+    @Value("${userserivce.api.url}")
     private String userServiceUrl;
 
 
-
+    @Value("${userservice.api.path.validate}")
     private String userServiceValidateUrl;
 
     public UserServiceClient(RestTemplateBuilder restTemplateBuilder){
         this.restTemplateBuilder = restTemplateBuilder;
     }
 
-    public String validateToken(String token){
-        ValidateTokenDto validateTokenDto = new ValidateTokenDto();
-        validateTokenDto.setToken(token);
-        String validateTokenUrl = userServiceUrl+ userServiceValidateUrl;
+    public String validateToken(ValidateTokenDto validateTokenDto){
+        String validateTokenUrl = userServiceUrl+userServiceValidateUrl;
         RestTemplate restTemplate = restTemplateBuilder.build();
         ResponseEntity<String> validateResponse = restTemplate.postForEntity(validateTokenUrl, validateTokenDto, String.class);
         return validateResponse.getBody();

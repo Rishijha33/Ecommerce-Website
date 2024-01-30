@@ -1,8 +1,12 @@
 package com.microservices.productservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microservices.productservice.client.UserServiceClient;
+import com.microservices.productservice.dto.JwtPayloadDto;
 import com.microservices.productservice.dto.ProductRequest;
 import com.microservices.productservice.dto.ProductResponse;
+import com.microservices.productservice.dto.ValidateTokenDto;
 import com.microservices.productservice.exception.ProductNotFoundException;
 import com.microservices.productservice.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +41,7 @@ public class ProductController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductResponse> getAllProducts(@RequestHeader("token") String token){
+    public List<ProductResponse> getAllProducts(@RequestHeader("token") String token) throws JsonProcessingException {
         log.info(token);
         validateUser(token);
         return productService.getAllProducts();
@@ -58,12 +62,21 @@ public class ProductController {
         return CompletableFuture.supplyAsync(() -> productResponse);
     }
 
-    private void validateUser(String token){
+    private void validateUser(String token) throws JsonProcessingException {
         String[] chunks = token.split("\\.");
         Base64.Decoder decoder = Base64.getUrlDecoder();
         String header = new String(decoder.decode(chunks[0]));
         String payload = new String(decoder.decode(chunks[1]));
+        ObjectMapper mapper = new ObjectMapper();
         log.info("HEADER : "+ header + " PAYLOAD : " + payload);
+        JwtPayloadDto jwtPayload = mapper.readValue(payload, JwtPayloadDto.class);
+        log.info("JWT" + jwtPayload.toString());
+        int userId = jwtPayload.getUserId();
+        ValidateTokenDto validateTokenDto = new ValidateTokenDto((long)userId, token);
+        String response = userServiceClient.validateToken(validateTokenDto);
+        log.info(response);
+
+
 //        String response = userServiceClient.validateToken(token);
 //        log.info(response);
     }

@@ -73,7 +73,7 @@ public class AuthService {
 
         // Start adding the claims
         Map<String, Object> jsonForJWT = new HashMap<>();
-        jsonForJWT.put("email", user.getEmail());
+        jsonForJWT.put("userId", user.getId());
         jsonForJWT.put("roles", user.getRoles());
         jsonForJWT.put("createdAt", new Date());
         jsonForJWT.put("expiryAt" ,new Date(LocalDate.now().plusDays(3).toEpochDay()));
