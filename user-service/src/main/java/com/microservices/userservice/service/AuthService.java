@@ -73,7 +73,7 @@ public class AuthService {
 
         // Start adding the claims
         Map<String, Object> jsonForJWT = new HashMap<>();
-        jsonForJWT.put("email", user.getEmail());
+        jsonForJWT.put("userId", user.getId());
         jsonForJWT.put("roles", user.getRoles());
         jsonForJWT.put("createdAt", new Date());
         jsonForJWT.put("expiryAt" ,new Date(LocalDate.now().plusDays(3).toEpochDay()));
@@ -156,6 +156,17 @@ public class AuthService {
     {
          return new ResponseEntity<>(sessionRepository.findAll(), HttpStatus.OK);
     }
+
+    public ResponseEntity<User> getUser(String token){
+        Optional<Session> sessionOptional = sessionRepository.findByTokenAndSessionStatus(token, SessionStatus.ACTIVE);
+        if(sessionOptional.isEmpty()){
+            throw new RuntimeException("Session not present");
+        }
+
+        User user = sessionOptional.get().getUser();
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
 
 
 

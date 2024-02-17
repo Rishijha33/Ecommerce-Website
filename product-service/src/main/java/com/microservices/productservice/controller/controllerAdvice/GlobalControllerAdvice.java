@@ -16,4 +16,12 @@ public class GlobalControllerAdvice {
         return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
     }
 
+
+    @ExceptionHandler(value = InvalidTokenException.class)
+    public ResponseEntity<String> handleInvalidTokenException(Exception ex)
+    {
+        String message = ex.getMessage();
+        return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
+    }
+
 }

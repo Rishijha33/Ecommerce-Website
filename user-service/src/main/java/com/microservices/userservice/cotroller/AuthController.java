@@ -6,6 +6,7 @@ import com.microservices.userservice.dto.UserDto;
 import com.microservices.userservice.dto.ValidateTokenRequest;
 import com.microservices.userservice.model.Session;
 import com.microservices.userservice.model.SessionStatus;
+import com.microservices.userservice.repository.SessionRepository;
 import com.microservices.userservice.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,10 +20,13 @@ import java.util.List;
 @RequestMapping("/api/auth")
 @Slf4j
 public class AuthController {
+    private final SessionRepository sessionRepository;
     private final AuthService authService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService,
+                          SessionRepository sessionRepository) {
         this.authService = authService;
+        this.sessionRepository = sessionRepository;
     }
 
     @PostMapping(path = "/signup")
@@ -57,6 +61,12 @@ public class AuthController {
     @GetMapping(path = "/sessions")
     public ResponseEntity<List<Session>> getAllSessions(){
         return authService.getAllSessions();
+    }
+
+    @PostMapping(path = "/user")
+    public Long getUser(String token){
+       Long userId = authService.getUser(token).getBody().getId();
+       return userId;
     }
 
 
