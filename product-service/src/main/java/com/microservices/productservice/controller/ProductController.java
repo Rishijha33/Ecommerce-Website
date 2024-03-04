@@ -11,7 +11,9 @@ import com.microservices.productservice.exception.ProductNotFoundException;
 import com.microservices.productservice.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.function.EntityResponse;
 
 import java.util.Base64;
 import java.util.List;
@@ -50,16 +52,17 @@ public class ProductController {
 
     @GetMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ProductResponse getProductById(@PathVariable("id") String id, @RequestHeader("token") String token)
+    public ProductResponse getProductById(@PathVariable("id") String id)
     {
         return productService.getProductById(id);
     }
 
     @GetMapping(path = "/name/{name}")
     @ResponseStatus(HttpStatus.OK)
-    public CompletableFuture<ProductResponse> getProductByName(@PathVariable("name") String getProductByName, @RequestHeader("token") String token) throws ProductNotFoundException {
+    public ResponseEntity<ProductResponse> getProductByName(@PathVariable("name") String getProductByName) throws ProductNotFoundException {
         ProductResponse productResponse = productService.getProductByName(getProductByName);
-        return CompletableFuture.supplyAsync(() -> productResponse);
+        log.info(String.valueOf(productResponse));
+        return new ResponseEntity<>(productResponse, HttpStatus.OK);
     }
 
     private void validateUser(String token) throws JsonProcessingException {
