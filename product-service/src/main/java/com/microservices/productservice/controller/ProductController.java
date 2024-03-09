@@ -43,9 +43,10 @@ public class ProductController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductResponse> getAllProducts(@RequestHeader("token") String token) throws JsonProcessingException {
-        log.info(token);
-        validateUser(token);
+        public List<ProductResponse> getAllProducts() throws JsonProcessingException {
+//        log.info(token);
+//        validateUser(token);
+        log.info("Sent");
         return productService.getAllProducts();
 
     }

@@ -6,8 +6,11 @@ import com.microservices.productservice.exception.ProductNotFoundException;
 import com.microservices.productservice.model.Product;
 import com.microservices.productservice.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 @Service
@@ -34,9 +37,12 @@ public class ProductService {
 
     public List<ProductResponse> getAllProducts()
     {
-        List<Product> products = productRepository.findAll();
-
+        PageRequest pageRequest = PageRequest.of(1, 10);
+        Page<Product> products = productRepository.findAll(pageRequest);
+        System.out.println(products);
+        log.info(products.toString());
         List<ProductResponse> productResponses = products.stream().map(this::mapToProductResponse).toList();
+        log.info("Sent the response");
         return productResponses;
     }
 
