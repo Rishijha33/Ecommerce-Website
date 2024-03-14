@@ -27,7 +27,10 @@ public class SearchService {
         // using the list of sort params to create our sort object
         Sort sort = null;
         Pageable pageRequest = null;
+        // Checking for null conditions
         if(sortParams != null){
+            // Sorting the initial param
+
             if(sortParams.get(0).getSortType().equals("ASC")){
                 sort.by(sortParams.get(0).getSortParamName()).ascending();
             }
@@ -35,6 +38,7 @@ public class SearchService {
                 sort.by(sortParams.get(0).getSortParamName()).descending();
             }
 
+            // Using a loop to parse and check using the sortParams object to store the property and sorting order - ASC/DESC
             for(int i = 1;i<sortParams.size();i++){
                 if(sortParams.get(i).getSortType().equals("ASC")){
                     sort.and(sort.by(sortParams.get(i).getSortParamName()).ascending());
@@ -44,10 +48,12 @@ public class SearchService {
                 }
             }
 
+            // Passing the sort object to pageRequest
             pageRequest = PageRequest.of(pageNumber-1, pageSize, sort);
         }
 
         else {
+            // If no filter/sorting required the use this pageRequest object
             pageRequest = PageRequest.of(pageNumber-1, pageSize);
         }
 
